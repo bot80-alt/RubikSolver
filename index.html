@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rubik's Cube Solver</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #000000;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.7rem;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #ffffff;
+      color: #000;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: #888888;
+      transform: scale(1.05);
+    }
+
+    .result {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      color: #fff;
+      word-wrap: break-word;
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rubik's Cube Solver</h1>
+
+  <div class="container">
+    <p>Enter the cube state :</p>
+    <input type="text" id="cubeState" placeholder="Enter cube configuration string here..." />
+    <button onclick="solveCube()">Solve Cube</button>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <footer>Python Flask + Pycube + JS</footer>
+
+  <script>
+    async function solveCube() {
+      const state = document.getElementById("cubeState").value.trim();
+      const resultDiv = document.getElementById("result");
+
+      if (!state) {
+        resultDiv.innerHTML = "Please enter a cube state!";
+        return;
+      }
+
+      resultDiv.innerHTML = "Solving...";
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/solve", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ cube: state }),
+        });
+
+        const data = await response.json();
+
+        if (data.solution) {
+          resultDiv.innerHTML = `<strong>Solution:</strong> ${data.solution}`;
+        } else {
+          resultDiv.innerHTML = "invalid cube bro or error solving.";
+        }
+      } catch (error) {
+        console.error(error);
+        resultDiv.innerHTML = "Failed to connect to backend. Make sure Flask is running.";
+      }
+    }
+  </script>
+</body>
+</html>
